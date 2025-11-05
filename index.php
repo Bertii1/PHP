@@ -85,10 +85,15 @@
   <div>
     <h1>Form Login</h1>
     <form id="form" action="visualizer.php" method="post">
-      <input type="text" placeholder="Matricola" required>
-      <input type="text" placeholder="Dispositivo" required>
+      <select name="dispositivo" required>
+        <option value="">Dispositivo</option>
+        <option value="mobile">mobile</option>
+        <option value="desktop">desktop</option>
+        <option value="tablet">tablet</option>
+        <option value="laptop">laptop</option>
+      </select>
 
-      <select required>
+      <select name="risoluzione" required>
         <option value="">Risoluzione</option>
         <option value="3840x2160">3840x2160</option>
         <option value="2560x1440">2560x1440</option>
@@ -96,7 +101,7 @@
         <option value="640x480">640x480</option>
       </select>
 
-      <select required>
+      <select name="sistema_operativo" required>
         <option value="">Sistema Operativo</option>
         <option value="macos">macOS</option>
         <option value="ios">iOS</option>

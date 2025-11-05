@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
   <meta charset="UTF-8">
   <title>Device Table</title>
@@ -20,13 +21,18 @@
       width: 80%;
       max-width: 900px;
       background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
+      border-left: 5px, solid, #637CA9;
+      border-right: 5px, solid, #637CA9;
+      border-bottom: 5px, solid, #637CA9;
+      border-radius: 12px;
+
     }
 
-    th, td {
+    th,
+    td {
       padding: 14px 18px;
       text-align: left;
     }
@@ -56,13 +62,51 @@
     }
   </style>
 </head>
+
 <body>
-  <table>
+  <table id="table">
     <caption>Elenco Dispositivi</caption>
     <?php
-      $file = fopen("device.csv", "r");
-      $row = 0;
+     $filename = "device.csv";
+    LoadTable(false);
 
+    if (isset($_POST['dispositivo'])) {
+      $dispositivo = $_POST['dispositivo'];
+      $risoluzione = $_POST['risoluzione'];
+      $sistema_operativo = $_POST['sistema_operativo'];
+      $matricola = 0;
+      $lines = file($filename);
+      if (is_string($lines[count($lines) - 1][0])){
+        $matricola = 1;
+      }else{
+        $matricola = $lines[count($lines) - 1][0] + 1;
+      }
+      $data = array($matricola, $dispositivo, $risoluzione, $sistema_operativo);
+      appendCSV($data);
+      LoadTable(true);
+    }
+
+    function appendCSV($data)
+    {
+      global $filename;
+    
+      $fp = fopen($filename, 'a');
+      fputcsv($fp, $data);
+      fclose($fp);
+    }
+
+    function EmptyTable($caller){
+      echo '<script>document.getElementById("table").innerHTML = "";
+      console.log("Wipe Table from '.$caller.'");</script>';
+    }
+    function LoadTable($empty)
+    {
+      if($empty){
+        EmptyTable("Load Table");
+      }
+      $file = fopen("device.csv", "r");
+
+      $row = 0;
       while (($line = fgetcsv($file)) !== false) {
         echo "<tr>";
         foreach ($line as $cell) {
@@ -74,9 +118,13 @@
         echo "</tr>";
         $row++;
       }
-
       fclose($file);
+
+    }
+
+
     ?>
   </table>
 </body>
+
 </html>
