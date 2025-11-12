@@ -67,7 +67,7 @@
   <table id="table">
     <caption>Elenco Dispositivi</caption>
     <?php
-     $filename = "device.csv";
+    $filename = "device.csv"; 
     LoadTable(false);
 
     if (isset($_POST['dispositivo'])) {
@@ -86,8 +86,7 @@
       LoadTable(true);
     }
 
-    function appendCSV($data)
-    {
+    function appendCSV($data){
       global $filename;
     
       $fp = fopen($filename, 'a');
@@ -99,8 +98,8 @@
       echo '<script>document.getElementById("table").innerHTML = "";
       console.log("Wipe Table from '.$caller.'");</script>';
     }
-    function LoadTable($empty)
-    {
+
+    function LoadTable($empty){
       if($empty){
         EmptyTable("Load Table");
       }
@@ -119,9 +118,7 @@
         $row++;
       }
       fclose($file);
-
     }
-
 
     ?>
   </table>
