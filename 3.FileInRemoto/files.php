@@ -130,7 +130,7 @@
                       $estensione = pathinfo($file, PATHINFO_EXTENSION);
                       if($estensione == $ext) { 
                         echo "<tr><td><img src='./img/$estensione.svg' width='20' height='20'></td><td>
-                        <a href='./progetti/$file'>$file</a></td></tr>";
+                        <a href='./progetti/$file'>$file</a></td></tr>\n";
                         $fileCount++;
                       }
                     }

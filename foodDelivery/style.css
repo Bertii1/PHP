@@ -1,0 +1,9 @@
+input:invalid{
+border: 2px solid red;
+background-color: #FF0000;
+}
+
+input:valid{
+border: 2px dark green;
+background-color: #66FF00;
+}

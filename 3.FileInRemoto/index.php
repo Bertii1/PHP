@@ -85,11 +85,13 @@
                       $estensione = pathinfo($file, PATHINFO_EXTENSION);
                       if(!in_array($estensione, $estensioni)) {
                         $estensioni[] = $estensione;
-                        echo "<option value='$estensione'>.$estensione</option>";
+                        echo "\n\t\t<option value='$estensione'>.$estensione</option>";
                       }
+                      
                     }
                   }
               }
+              echo("\n");
               closedir($dh);
           }
       }

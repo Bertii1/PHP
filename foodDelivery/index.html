@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FOOD DELIVERY</title>
+        <script src="script.js"></script>
+         <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>FOOD DELIVERY</h1>
+        <p>
+            inserisci il nome:
+            <input type="text" id="nome" pattern="[A-Za-z\s]+"  /required>
+        </p>
+        <p>
+            inserisci il cognome:
+            <input type="text" id="cognome" pattern="[A-Za-z\s]+" /required>
+        </p>
+        <p>
+            inserisci l'indirizzo di consegna:
+            <input type="text" id="indirizzo" pattern="[A-Za-z0-9\s,.-]+" /required>
+        </p>
+       <p>
+            inserisci il numero di telefono:
+            <input type="tel" name="telefono" pattern="^(\+39)? ?[0-9]{3}[ -]?[0-9]{6,7}$" /required>
+        </p>
+        <p>
+            inserisci la tipologia di pasto:
+            <select id="pasto">
+                <option value="10" >carne - 10€</option>
+                <option value="8" >pesce - 8€</option>
+                <option value="6" >vegetariano - 6€</option>
+            </select>
+        </p>
+        <p>
+            inesersci gli amici:
+            <input type="number" id="amici" value=" min=0 max=5"  /required>
+        </p>
+        <p>
+            scegli il tipo di menù:
+            <select id="menu">
+                <option value="0">nessun menù</option>
+                <option value="20">menù small (20€)</option>
+                <option value="25">menù medium (25€)</option>
+                <option value="30">menù large (30€)</option>
+             </select>
+        </p>
+        <button onclick="valida(); calcolaPrezzo()" id="btn">Invia</button>
+        <p id="costoTotale"></p>
+    </body>
+</html>

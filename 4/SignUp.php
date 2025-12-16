@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Registrazione</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,18 +25,16 @@
       */
       for($i = 0; $i < count($json["utenti"]); $i++){
         if($json["utenti"][$i]["email"] === $email){
-          echo("<h1>Utente Trovato</h1>");
-          if($json["utenti"][$i]["password"] === $password){
-            echo("<h1>Password Corretta</h1>");
-            sleep(0,5);
-            echo("<div class='small'>Login completato ✅</div>");
-          }
+          echo("<div class='small'>L'utente esiste già</div>");
         }
       }
     }else{
       echo ("<div class='small'>Richiesta POST non ricevuta</div>");
     }
-  ?>   
+  
+  
+  ?>
   </div>
+  
 </body>
 </html>
