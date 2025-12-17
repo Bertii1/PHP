@@ -1,0 +1,82 @@
+[
+  {
+    "codice": "05",
+    "nome": "Veneto"
+  },
+  {
+    "codice": "03",
+    "nome": "Lombardia"
+  },
+  {
+    "codice": "09",
+    "nome": "Toscana"
+  },
+  {
+    "codice": "20",
+    "nome": "Sardegna"
+  },
+  {
+    "codice": "13",
+    "nome": "Abruzzo"
+  },
+  {
+    "codice": "17",
+    "nome": "Basilicata"
+  },
+  {
+    "codice": "19",
+    "nome": "Sicilia"
+  },
+  {
+    "codice": "16",
+    "nome": "Puglia"
+  },
+  {
+    "codice": "01",
+    "nome": "Piemonte"
+  },
+  {
+    "codice": "12",
+    "nome": "Lazio"
+  },
+  {
+    "codice": "15",
+    "nome": "Campania"
+  },
+  {
+    "codice": "18",
+    "nome": "Calabria"
+  },
+  {
+    "codice": "11",
+    "nome": "Marche"
+  },
+  {
+    "codice": "10",
+    "nome": "Umbria"
+  },
+  {
+    "codice": "14",
+    "nome": "Molise"
+  },
+  {
+    "codice": "08",
+    "nome": "Emilia-Romagna"
+  },
+  {
+    "codice": "06",
+    "nome": "Friuli-Venezia Giulia"
+  },
+  {
+    "codice": "07",
+    "nome": "Liguria"
+  },
+  {
+    "codice": "04",
+    "nome": "Trentino-Alto Adige/Südtirol"
+  },
+  {
+    "codice": "02",
+    "nome": "Valle d'Aosta/Vallée d'Aoste"
+  }
+]

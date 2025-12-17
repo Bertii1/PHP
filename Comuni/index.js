@@ -1,5 +1,7 @@
+let regioni = [];
+let provincie = []
 let comuni = [];
-const regioni = [];
+
 
 let selectRegioni, selectProvincie, selectComuni;
 
@@ -10,23 +12,13 @@ async function INIT() {
   selectProvincie = document.getElementById("selectProvincie");
   selectComuni = document.getElementById("selectComuni");
 
-
-  try {
-    const resp = await fetch("regioni.php");
-    if (!resp.ok) {
-      console.error("richiesta fallita", resp.status);
-    } else {
-      comuni = await resp.json();
-    }
-  } catch (err) {
-    console.error("fetch error", err);
-  }
-
-  formatData();
-
+  regioni = await fetchfile("regioni")
+  provincie = await fetchfile("province")
+  comuni = await fetchfile("comuni")
+  
   clearSelect(selectRegioni, "Seleziona la regione");
   regioni.forEach((regione) => {
-    const optRegione = new Option(regione.nome, regione.codice);
+    const optRegione = new Option(regione.nome, regione.nome);
     selectRegioni.appendChild(optRegione);
   });
 
@@ -35,7 +27,6 @@ async function INIT() {
 
   selectRegioni.addEventListener("change", updateProvincieSelects);
   selectProvincie.addEventListener("change", updateComuniSelects);
-  selectComuni.addEventListener("change", loadComuneData);
 }
 
 function clearSelect(sel, placeholderText) {
@@ -47,26 +38,21 @@ function clearSelect(sel, placeholderText) {
 }
 
 function updateProvincieSelects() {
-  const codiceRegione = selectRegioni.value;
+  const nomeRegione = selectRegioni.value;
   clearSelect(selectProvincie, "Seleziona la provincia");
   clearSelect(selectComuni, "Seleziona il comune");
   selectComuni.hidden = true;
 
-  if (!codiceRegione) {
+  if (!nomeRegione) {
     selectProvincie.hidden = true;
     return;
   }
 
-  const regione = regioni.find((r) => r.codice === codiceRegione);
-  if (!regione || !regione.provincie) {
-    selectProvincie.hidden = true;
-    return;
-  }
-
-  regione.provincie.forEach((provincia) => {
-    const optProvincia = new Option(provincia.nome, provincia.codice);
-    selectProvincie.appendChild(optProvincia);
-  });
+  provincie.forEach(p =>{
+    if (p.regione === nomeRegione){
+      selectProvincie.appendChild(new Option(p.nome,p.codice))
+    }
+  })
 
   selectProvincie.hidden = false;
 }
@@ -80,23 +66,98 @@ function updateComuniSelects() {
     return;
   }
 
-  let provinciaFound = null;
-  for (const r of regioni) {
-    provinciaFound = r.provincie.find((p) => p.codice === codiceProvincia);
-    if (provinciaFound) break;
+  comuni.forEach(c =>{
+    if(c.provincia.codice === codiceProvincia){
+      const optComune = new Option(c.nome, c.codice);
+      selectComuni.appendChild(optComune);
+    }
+
+  })
+  selectComuni.hidden = false;
+}
+
+function loadComuneData() {
+  // carica i dati del comune selezionato e li inserisce come campi hidden nel form
+  const codiceComune = selectComuni.value;
+  const form = document.getElementById("registrationForm");
+
+  // rimuove eventuali campi comuni precedenti
+  if (form) removeHiddenComuneInputs(form);
+
+  if (!codiceComune) return;
+
+  // prova a trovare il comune nell'array piatto `comuni`
+  let comuneObj = comuni.find((c) => c.codice === codiceComune);
+
+  // se non lo trovi, prova a cercare nella struttura `regioni` -> `provincie` -> `comuni`
+  if (!comuneObj) {
+    for (const r of regioni) {
+      for (const p of r.provincie || []) {
+        const found = (p.comuni || []).find((cc) => cc.codice === codiceComune);
+        if (found) {
+          // arricchisci l'oggetto con provincia/regioni, se possibile
+          comuneObj = Object.assign({}, found);
+          comuneObj.provincia = p;
+          comuneObj.regione = r;
+          break;
+        }
+      }
+      if (comuneObj) break;
+    }
   }
 
-  if (!provinciaFound || !provinciaFound.comuni) {
-    selectComuni.hidden = true;
+  if (!comuneObj) {
+    console.warn("Comune non trovato:", codiceComune);
     return;
   }
 
-  provinciaFound.comuni.forEach((c) => {
-    const optComune = new Option(c.nome, c.codice);
-    selectComuni.appendChild(optComune);
-  });
+  // helper per normalizzare valori
+  const val = (v) => (v === undefined || v === null ? "" : v);
 
-  selectComuni.hidden = false;
+  if (form) {
+    // dettagli specifici del comune
+    createOrUpdateHidden(form, "comune_codice", val(comuneObj.codice));
+    createOrUpdateHidden(form, "comune_nome", val(comuneObj.nome));
+    createOrUpdateHidden(
+      form,
+      "comune_cap",
+      Array.isArray(comuneObj.cap) ? comuneObj.cap.join(",") : val(comuneObj.cap)
+    );
+    createOrUpdateHidden(form, "comune_codiceCatastale", val(comuneObj.codiceCatastale));
+    createOrUpdateHidden(form, "comune_popolazione", val(comuneObj.popolazione));
+    createOrUpdateHidden(form, "comune_provincia", (comuneObj.provincia && comuneObj.provincia.nome) || val(comuneObj.sigla));
+    createOrUpdateHidden(form, "comune_regione", (comuneObj.regione && comuneObj.regione.nome) || "");
+
+    // campi con i nomi attesi dal backend
+    createOrUpdateHidden(form, "regione", (comuneObj.regione && comuneObj.regione.nome) || "");
+    createOrUpdateHidden(form, "provincia", (comuneObj.provincia && comuneObj.provincia.nome) || ((comuneObj.sigla) ? comuneObj.sigla : ""));
+    createOrUpdateHidden(form, "comune", val(comuneObj.nome));
+  }
+
+  // salva una copia veloce nel dataset dell'elemento select
+  selectComuni.dataset.selectedComune = JSON.stringify({ codice: comuneObj.codice, nome: comuneObj.nome });
+
+  console.log("Comune caricato:", comuneObj.nome);
+}
+
+function createOrUpdateHidden(form, name, value) {
+  let input = form.querySelector(`input[name="${name}"]`);
+  if (!input) {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    form.appendChild(input);
+  }
+  input.value = value;
+}
+
+function removeHiddenComuneInputs(form) {
+  const inputs = Array.from(form.querySelectorAll("input")).filter(Boolean);
+  inputs.forEach((i) => {
+    if (i.name && (i.name.startsWith("comune_") || ["regione", "provincia", "comune"].includes(i.name))) {
+      i.remove();
+    }
+  });
 }
 
 function formatData() {  
@@ -163,4 +224,17 @@ function formatData() {
   });
 
   console.log(regioni)
+}
+
+async function fetchfile(file){
+    try {
+    const resp = await fetch("./Routes/Files.php?file="+file)
+    if (!resp.ok) {
+      console.error("richiesta fallita", resp.status);
+    } else {
+      return JSON.parse(await resp.json())
+    }
+  } catch (err) {
+    console.error("fetch error", err);
+  }
 }
