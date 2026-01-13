@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Convegni</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    #select_convegno {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 40px;
+      border: 1px solid #000000;
+      background-color: #ffffff;
+      color: #000000;
+      font-size: 16px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #select_convegno:hover,
+    #select_convegno:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #000000;
+      background-color: #f9f9f9;
+    }
+
+    #table_partecipanti {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #table_partecipanti tr {
+      border-bottom: 1px solid #000000;
+    }
+
+    #table_partecipanti tr:last-child {
+      border-bottom: none;
+    }
+
+    #table_partecipanti td {
+      padding: 16px 12px;
+      text-align: left;
+      font-weight: 400;
+      border: 1px solid #000000;
+    }
+
+    #table_partecipanti td:first-child {
+      font-weight: 500;
+    }
+
+    #table_partecipanti thead {
+      background-color: #000000;
+      color: #ffffff;
+    }
+
+    #table_partecipanti thead th {
+      padding: 16px 12px;
+      text-align: left;
+      font-weight: 600;
+      border: 1px solid #000000;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Convegni</h1>
+    <select id="select_convegno" onchange="CaricaPartecipanti()">
+      <option value="">Seleziona un convegno</option>
+    </select>
+    <table id="table_partecipanti">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Cognome</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    document.onload = CaricaSelect()
+
+    function CaricaSelect(){
+      let select = document.getElementById("select_convegno");
+      fetch("recupera.php?" + new URLSearchParams({lista_convegni:true}).toString()).then(response => response.json()).then(convegni => {
+        convegni.forEach(convegno => {
+          console.log(convegno)
+          let opt = document.createElement("option")
+          opt.value = convegno.filename
+          opt.innerHTML = convegno.name.toUpperCase()
+          select.appendChild(opt)
+        })
+      })
+    }
+
+    function CaricaPartecipanti() {
+      let table_partecipanti = document.querySelector("#table_partecipanti tbody")
+      table_partecipanti.innerHTML = ""
+      let nome_convegno = document.getElementById("select_convegno").value;
+      fetch("recupera.php?" + new URLSearchParams({file_convegno:nome_convegno}).toString(), {
+        method:"GET"
+      }).then(response => response.json()).then(convegno =>{
+        convegno.partecipanti.forEach(partecipante =>{
+          table_partecipanti.innerHTML += "<tr><td>"+partecipante.nome+"</td><td>"+partecipante.cognome+"</td></tr>" 
+        })
+      })
+    }
+  </script>
+</body>
+
+</html>
+
+
