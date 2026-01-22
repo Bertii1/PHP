@@ -1,0 +1,86 @@
+[
+    {
+        "id": 1,
+        "utente": "smonni0",
+        "password": "zT4'Z<t6",
+        "tipo": "user"
+    },
+    {
+        "id": 2,
+        "utente": "dscatchard1",
+        "password": "nD9`~s`yb@S7#",
+        "tipo": "admin"
+    },
+    {
+        "id": 3,
+        "utente": "cmcgahey2",
+        "password": "uV6|<C\\%ds?3)X}",
+        "tipo": "admin"
+    },
+    {
+        "id": 4,
+        "utente": "aassaf3",
+        "password": "yV5+Z\/ch*n",
+        "tipo": "user"
+    },
+    {
+        "id": 5,
+        "utente": "tuzelli4",
+        "password": "zW2~5nGIEA}!)q",
+        "tipo": "user"
+    },
+    {
+        "id": 6,
+        "utente": "csmees5",
+        "password": "vC8#(6YUX|f,",
+        "tipo": "user"
+    },
+    {
+        "id": 7,
+        "utente": "nstrephan6",
+        "password": "qE9\"A{_xa4Q\\&\/g{",
+        "tipo": "user"
+    },
+    {
+        "id": 8,
+        "utente": "aaylott7",
+        "password": "iD6(w0R#AAA",
+        "tipo": "admin"
+    },
+    {
+        "id": 9,
+        "utente": "bpeffer8",
+        "password": "uV9!u){A)ru*|VH",
+        "tipo": "admin"
+    },
+    {
+        "id": 10,
+        "utente": "drodway9",
+        "password": "jY9\"=Y>|m=TZy'@",
+        "tipo": "user"
+    },
+    {
+        "id": 11,
+        "utente": "dario",
+        "password": "ciao",
+        "tipo": "admin"
+    },
+    {
+        "id": 12,
+        "utente": "ciao",
+        "password": "dario",
+        "tipo": "user"
+    },
+    {
+        "id": 13,
+        "utente": "test_user_1768936656",
+        "password": "Password123",
+        "tipo": "user"
+    },
+    {
+        "id": 14,
+        "utente": "test_user_1768936661",
+        "password": "Password123",
+        "tipo": "user"
+    }
+]

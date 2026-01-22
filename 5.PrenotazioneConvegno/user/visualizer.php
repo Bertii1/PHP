@@ -104,49 +104,62 @@
     <h1>Convegni</h1>
     <select id="select_convegno" onchange="CaricaPartecipanti()">
       <option value="">Seleziona un convegno</option>
-    </select>
-    <table id="table_partecipanti">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Cognome</th>
-        </tr>
-      </thead>
-      <tbody>
+      <?php
+      if (!isset($_GET["file_convegno"])) {
+        $files = scandir("../data/convegni");
+        $res = "";
+        for ($i = 0; $i < count($files); $i++) {
+          $filename = preg_replace('/[_]/', ' ', pathinfo($files[$i], PATHINFO_FILENAME));
+          if (strlen($filename) > 2) {
+            $res .= "<option value='" . $files[$i] . "'>" . $filename . "</option>\n";
+          }
+        }
+        echo $res;
+      }else{
+        $filename = $_GET["file_convegno"];
+        $filename =  preg_replace('/[_]/', ' ', $filename);
+        echo "<option>".$filename."</option>";
+      }
+        ?>
+      </select>
+      <table id="table_partecipanti">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Cognome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          if (isset($_GET["file_convegno"]) && !empty($_GET["file_convegno"])) {
+            session_start();
+            if ($_SESSION == "admin" || $_SESSION == "user") {
+              $filename = $_GET["file_convegno"];
+              $filepath = "./convegni/" . basename($filename);
+
+              if (file_exists($filepath)) {
+                $json = file_get_contents($filepath);
+                $json = json_decode($json, true);
+
+                if ($json && isset($json["partecipanti"])) {
+                  for ($i = 0; $i < count($json["partecipanti"]); $i++) {
+                    $partecipante = $json["partecipanti"][$i];
+                    echo "<tr><td>" . htmlspecialchars($partecipante["nome"]) . "</td><td>" . htmlspecialchars($partecipante["cognome"]) . "</td></tr>\n";
+                  }
+                }
+              }
+            }
+          }
+      ?>
       </tbody>
     </table>
   </div>
   <script>
-    document.onload = CaricaSelect()
-
-    function CaricaSelect(){
-      let select = document.getElementById("select_convegno");
-      fetch("recupera.php?" + new URLSearchParams({lista_convegni:true}).toString()).then(response => response.json()).then(convegni => {
-        convegni.forEach(convegno => {
-          console.log(convegno)
-          let opt = document.createElement("option")
-          opt.value = convegno.filename
-          opt.innerHTML = convegno.name.toUpperCase()
-          select.appendChild(opt)
-        })
-      })
-    }
-
     function CaricaPartecipanti() {
-      let table_partecipanti = document.querySelector("#table_partecipanti tbody")
-      table_partecipanti.innerHTML = ""
-      let nome_convegno = document.getElementById("select_convegno").value;
-      fetch("recupera.php?" + new URLSearchParams({file_convegno:nome_convegno}).toString(), {
-        method:"GET"
-      }).then(response => response.json()).then(convegno =>{
-        convegno.partecipanti.forEach(partecipante =>{
-          table_partecipanti.innerHTML += "<tr><td>"+partecipante.nome+"</td><td>"+partecipante.cognome+"</td></tr>" 
-        })
-      })
+      let nomeConvegno = document.getElementById("select_convegno").value
+      window.location = window.location +"?" + new URLSearchParams({ "file_convegno": nomeConvegno }).toString();
     }
   </script>
 </body>
 
 </html>
-
-

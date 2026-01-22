@@ -1,7 +1,7 @@
 <?php
 if (isset($_GET["file_convegno"])) {
   $filename = $_GET["file_convegno"];
-  $json = file_get_contents("./convegni/" . $filename);
+  $json = file_get_contents("../data/convegni/" . $filename);
   if ($json) {
     http_response_code(200);
     echo $json;
@@ -12,7 +12,7 @@ if (isset($_GET["file_convegno"])) {
 
 } elseif (isset($_GET["lista_convegni"])) {
 
-  $files = scandir("convegni");
+  $files = scandir("../data/convegni");
   $res = "[";
   for ($i = 0; $i < count($files); $i++) {
     $filename = preg_replace('/[_]/', ' ', pathinfo($files[$i], PATHINFO_FILENAME));
@@ -23,3 +23,4 @@ if (isset($_GET["file_convegno"])) {
   $res = rtrim($res, ",") . "]";
   echo $res;
 }
+?>
