@@ -2,61 +2,61 @@
     {
         "id": 1,
         "utente": "smonni0",
-        "password": "zT4'Z<t6",
+        "password": "Password1",
         "tipo": "user"
     },
     {
         "id": 2,
         "utente": "dscatchard1",
-        "password": "nD9`~s`yb@S7#",
+        "password": "Password2",
         "tipo": "admin"
     },
     {
         "id": 3,
         "utente": "cmcgahey2",
-        "password": "uV6|<C\\%ds?3)X}",
+        "password": "Password3",
         "tipo": "admin"
     },
     {
         "id": 4,
         "utente": "aassaf3",
-        "password": "yV5+Z\/ch*n",
+        "password": "Password4",
         "tipo": "user"
     },
     {
         "id": 5,
         "utente": "tuzelli4",
-        "password": "zW2~5nGIEA}!)q",
+        "password": "Password5",
         "tipo": "user"
     },
     {
         "id": 6,
         "utente": "csmees5",
-        "password": "vC8#(6YUX|f,",
+        "password": "Password6",
         "tipo": "user"
     },
     {
         "id": 7,
         "utente": "nstrephan6",
-        "password": "qE9\"A{_xa4Q\\&\/g{",
+        "password": "Password7",
         "tipo": "user"
     },
     {
         "id": 8,
         "utente": "aaylott7",
-        "password": "iD6(w0R#AAA",
+        "password": "Password8",
         "tipo": "admin"
     },
     {
         "id": 9,
         "utente": "bpeffer8",
-        "password": "uV9!u){A)ru*|VH",
+        "password": "Password9",
         "tipo": "admin"
     },
     {
         "id": 10,
         "utente": "drodway9",
-        "password": "jY9\"=Y>|m=TZy'@",
+        "password": "Password10",
         "tipo": "user"
     },
     {
