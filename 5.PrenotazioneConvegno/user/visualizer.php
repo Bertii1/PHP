@@ -105,59 +105,86 @@
     <select id="select_convegno" onchange="CaricaPartecipanti()">
       <option value="">Seleziona un convegno</option>
       <?php
-      if (!isset($_GET["file_convegno"])) {
-        $files = scandir("../data/convegni");
-        $res = "";
-        for ($i = 0; $i < count($files); $i++) {
-          $filename = preg_replace('/[_]/', ' ', pathinfo($files[$i], PATHINFO_FILENAME));
-          if (strlen($filename) > 2) {
-            $res .= "<option value='" . $files[$i] . "'>" . $filename . "</option>\n";
-          }
-        }
-        echo $res;
-      }else{
-        $filename = $_GET["file_convegno"];
-        $filename =  preg_replace('/[_]/', ' ', $filename);
-        echo "<option>".$filename."</option>";
+      session_start();
+      if ($_SESSION["tipo"] !== "")
+        $hostname = "127.0.0.1";
+      $username = "GestioneConvegni_app";
+      $password = "ciaodario";
+      $db_name = "GestioneConvegni";
+
+      $conn = new mysqli($hostname, $username, $password, $db_name);
+
+      //controlla se la connessione al DataBase è andata a buon fine
+      if ($conn->connect_error) {
+        die("errore di connessione: " . $conn->connect_error . "\n");
+      } else {
+        echo "connected to DB\n";
       }
-        ?>
-      </select>
-      <table id="table_partecipanti">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Cognome</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          if (isset($_GET["file_convegno"]) && !empty($_GET["file_convegno"])) {
-            session_start();
-            if ($_SESSION == "admin" || $_SESSION == "user") {
-              $filename = $_GET["file_convegno"];
-              $filepath = "./convegni/" . basename($filename);
 
-              if (file_exists($filepath)) {
-                $json = file_get_contents($filepath);
-                $json = json_decode($json, true);
+      function execute_query($conn, $query)
+      {
+        $result = $conn->query($query);
+        if ($result) {
+          echo "query eseguita\n";
+          return $result;
+        } else {
+          echo "errore nell'esecuzione della query: " . $conn->error . "\n";
+          return false;
+        }
+      }
 
-                if ($json && isset($json["partecipanti"])) {
-                  for ($i = 0; $i < count($json["partecipanti"]); $i++) {
-                    $partecipante = $json["partecipanti"][$i];
-                    echo "<tr><td>" . htmlspecialchars($partecipante["nome"]) . "</td><td>" . htmlspecialchars($partecipante["cognome"]) . "</td></tr>\n";
-                  }
+      $query = "
+      SELECT * FROM Convegni v
+      ";
+
+      $result = execute_query($conn, $query);
+      if ($result != false) {
+        foreach ($result as $row) {
+          echo ("<option value=" . $row["id"] . ">" . $row["nome_convegno"] . "</option>");
+        }
+      }
+
+
+
+
+      ?>
+    </select>
+    <table id="table_partecipanti">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Cognome</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        if (isset($_GET["file_convegno"]) && !empty($_GET["file_convegno"])) {
+          session_start();
+          if ($_SESSION == "admin" || $_SESSION == "user") {
+            $filename = $_GET["file_convegno"];
+            $filepath = "./convegni/" . basename($filename);
+
+            if (file_exists($filepath)) {
+              $json = file_get_contents($filepath);
+              $json = json_decode($json, true);
+
+              if ($json && isset($json["partecipanti"])) {
+                for ($i = 0; $i < count($json["partecipanti"]); $i++) {
+                  $partecipante = $json["partecipanti"][$i];
+                  echo "<tr><td>" . htmlspecialchars($partecipante["nome"]) . "</td><td>" . htmlspecialchars($partecipante["cognome"]) . "</td></tr>\n";
                 }
               }
             }
           }
-      ?>
+        }
+        ?>
       </tbody>
     </table>
   </div>
   <script>
     function CaricaPartecipanti() {
       let nomeConvegno = document.getElementById("select_convegno").value
-      window.location = window.location +"?" + new URLSearchParams({ "file_convegno": nomeConvegno }).toString();
+      window.location = window.location + "?" + new URLSearchParams({ "file_convegno": nomeConvegno }).toString();
     }
   </script>
 </body>

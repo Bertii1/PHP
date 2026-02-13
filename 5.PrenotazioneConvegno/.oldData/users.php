@@ -4,7 +4,8 @@ $user = "GestioneConvegni_app";
 $db_password = "ciaodario";
 $dbname = "GestioneConvegni";
 
-function execute_query($conn, $query){
+function execute_query($conn, $query)
+{
   if ($conn->query($query) === true) {
     echo "query eseguita\n";
   } else {
@@ -17,7 +18,7 @@ $conn = new mysqli($server, $user, $db_password, $dbname);
 
 //controlla se la connessione al DataBase è andata a buon fine
 if ($conn->connect_error) {
-  die("errore di connessione: ".$conn -> connect_error . "\n");
+  die("errore di connessione: " . $conn->connect_error . "\n");
 } else {
   echo "connected to DB\n";
 }
@@ -30,24 +31,24 @@ $query = "CREATE TABLE IF NOT EXISTS Utenti (
     tipo VARCHAR(6) NOT NULL
 )";
 
-execute_query($conn,$query);
+execute_query($conn, $query);
 
 $json = file_get_contents("utenti.json");
 $json = json_decode($json, true);
 
 $query = "";
 
-for($i = 0; $i < count($json); $i++){
+for ($i = 0; $i < count($json); $i++) {
   $id = $json[$i]["id"];
   $nome_utente = $json[$i]["utente"];
   $password_utente = $json[$i]["password"];
   $tipo = $json[$i]["tipo"];
 
-  $query = "INSERT INTO Utenti (id, username, password, tipo) VALUES ('" 
-    . $id . "', '" 
-    . $nome_utente . "', '" 
-    . $password_utente . "', '" 
+  $query = "INSERT INTO Utenti (id, username, password, tipo) VALUES ('"
+    . $id . "', '"
+    . $nome_utente . "', '"
+    . $password_utente . "', '"
     . $tipo . "');";
-  
+
   execute_query($conn, $query);
 }

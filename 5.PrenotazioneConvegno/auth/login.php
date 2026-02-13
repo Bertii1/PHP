@@ -141,50 +141,92 @@
 </html>
 
 <?php
+
+function execute_query($conn, $query)
+{
+  $result = $conn->query($query);
+  if ($result) {
+    echo "query eseguita\n";
+    return $result;
+  } else {
+    echo "errore nell'esecuzione della query: " . $conn->error . "\n";
+    return false;
+  }
+}
+function ControllaCredenziali($username, $password)
+{
+  $db_password = "ciaodario";
+  $db_username = "GestioneConvegni_app";
+  $db_name = "GestioneConvegni";
+  $hostname = "localhost";
+
+  $conn = new mysqli($hostname, $db_username, $db_password, $db_name);
+
+  if ($conn->connect_error) {
+    die("errore di connessione: " . $conn->connect_error . "\n");
+  } else {
+    echo "connected to DB\n";
+  }
+
+  $query = "SELECT username, tipo FROM Utenti WHERE username = '" . $username . "' AND password = '" . $password . "'";
+
+  $res = execute_query($conn, $query);
+
+  if ($res != false) {
+    foreach ($res as $row) {
+      return $row;
+    }
+  } else {
+    return false;
+  }
+
+}
+
+
 session_start();
+if ($_COOKIE["loggedIn"] === true) {
+  redirectUserByTipo($_COOKIE["tipo"]);
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   if (isset($_POST["utente"]) && isset($_POST["password"])) {
-    
+
     $utente = $_POST["utente"];
     $password = $_POST["password"];
 
-    $utenti = file_get_contents("../data/utenti.json");
-    $utenti = json_decode($utenti, true);
+    $row = ControllaCredenziali($utente, $password);
 
-    $login_success = false;
-    for ($i = 0; $i < count($utenti); $i++) {
-      if ($utenti[$i]["utente"] === $utente) {
-        if ($utenti[$i]["password"] === $password) {
-          $_SESSION["tipo_utente"] = $utenti[$i]["tipo"];
-          $_SESSION["utente"] = $utente;
-          $login_success = true;
-          
-          switch ($utenti[$i]["tipo"]) {
-            case "user":
-              header("Location: ../user/visualizer.php");
-              exit;
-              break;
-            case "admin":
-              header("Location: ../admin/menu.php");
-              exit;
-              break;
-            default:
-              header("Location: ./visualizer.php");
-              exit;
-              break;
-          }
-        }
-      }
+    if ($row !== false) {
+      $_SESSION["tipo_utente"] = $row["tipo"];
+      $_SESSION["utente"] = $row["username"];
+      $login_success = true;
+      redirectUserByTipo($row["tipo"]);
     }
-    
+
+
     if (!$login_success) {
       echo "<script>alert('Credenziali non valide')</script>";
     }
+
   } else {
     echo "<script>alert('Parametri errati')</script>";
   }
 }
 
+function redirectUserByTipo($tipo_Utente)
+{
+  switch ($tipo_Utente) {
+    case "user":
+      header("Location: ../user/visualizer.php");
+      exit;
+    case "admin":
+      header("Location: ../admin/menu.php");
+      exit;
+    default:
+      header("Location: ../user/visualizer.php");
+      exit;
+  }
+}
 
 
 
