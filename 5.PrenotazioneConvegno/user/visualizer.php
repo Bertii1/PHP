@@ -96,6 +96,25 @@
       font-weight: 600;
       border: 1px solid #000000;
     }
+
+    .logout-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      border: 1px solid #000000;
+      background-color: #ffffff;
+      color: #000000;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .logout-link:hover {
+      background-color: #000000;
+      color: #ffffff;
+    }
   </style>
 </head>
 
@@ -105,47 +124,18 @@
     <select id="select_convegno" onchange="CaricaPartecipanti()">
       <option value="">Seleziona un convegno</option>
       <?php
-      session_start();
-      if ($_SESSION["tipo"] !== "")
-        $hostname = "127.0.0.1";
-      $username = "GestioneConvegni_app";
-      $password = "ciaodario";
-      $db_name = "GestioneConvegni";
+      require_once __DIR__ . "/../includes/auth.php";
+      require_once __DIR__ . "/../includes/db.php";
+      require_login();
 
-      $conn = new mysqli($hostname, $username, $password, $db_name);
-
-      //controlla se la connessione al DataBase è andata a buon fine
-      if ($conn->connect_error) {
-        die("errore di connessione: " . $conn->connect_error . "\n");
-      } else {
-        echo "connected to DB\n";
-      }
-
-      function execute_query($conn, $query)
-      {
-        $result = $conn->query($query);
-        if ($result) {
-          echo "query eseguita\n";
-          return $result;
-        } else {
-          echo "errore nell'esecuzione della query: " . $conn->error . "\n";
-          return false;
-        }
-      }
-
-      $query = "
-      SELECT * FROM Convegni v
-      ";
+      $query = "SELECT * FROM Convegni";
 
       $result = execute_query($conn, $query);
       if ($result != false) {
         foreach ($result as $row) {
-          echo ("<option value=" . $row["id"] . ">" . $row["nome_convegno"] . "</option>");
+          echo '<option value="' . htmlspecialchars($row["id"]) . '">' . htmlspecialchars($row["nome_convegno"]) . '</option>';
         }
       }
-
-
-
 
       ?>
     </select>
@@ -158,33 +148,28 @@
       </thead>
       <tbody>
         <?php
-        if (isset($_GET["file_convegno"]) && !empty($_GET["file_convegno"])) {
-          session_start();
-          if ($_SESSION == "admin" || $_SESSION == "user") {
-            $filename = $_GET["file_convegno"];
-            $filepath = "./convegni/" . basename($filename);
-
-            if (file_exists($filepath)) {
-              $json = file_get_contents($filepath);
-              $json = json_decode($json, true);
-
-              if ($json && isset($json["partecipanti"])) {
-                for ($i = 0; $i < count($json["partecipanti"]); $i++) {
-                  $partecipante = $json["partecipanti"][$i];
-                  echo "<tr><td>" . htmlspecialchars($partecipante["nome"]) . "</td><td>" . htmlspecialchars($partecipante["cognome"]) . "</td></tr>\n";
-                }
-              }
+        if (isset($_GET["id_convegno"]) && !empty($_GET["id_convegno"])) {
+          if ($_SESSION["tipo_utente"] == "admin" || $_SESSION["tipo_utente"] == "user") {
+            $id_convegno = $_GET["id_convegno"];
+            $stmt = $conn->prepare("SELECT * FROM Partecipanti WHERE id_convegno = ?");
+            $stmt->bind_param("i", $id_convegno);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            foreach ($res as $row) {
+              echo "<tr><td>" . htmlspecialchars($row["nome"]) . "</td><td>" . htmlspecialchars($row["cognome"]) . "</td></tr>";
             }
+            $stmt->close();
           }
         }
         ?>
       </tbody>
     </table>
+    <a href="../auth/logout.php" class="logout-link">Logout</a>
   </div>
   <script>
     function CaricaPartecipanti() {
-      let nomeConvegno = document.getElementById("select_convegno").value
-      window.location = window.location + "?" + new URLSearchParams({ "file_convegno": nomeConvegno }).toString();
+      let id_convegno = document.getElementById("select_convegno").value
+      window.location = window.location.pathname + "?" + new URLSearchParams({ "id_convegno": id_convegno }).toString();
     }
   </script>
 </body>

@@ -1,13 +1,9 @@
 <?php
+require_once __DIR__ . "/includes/db.php";
+global $conn;
+$nome_convegno = "volta in progress";
+$res = execute_query($conn, "SELECT id FROM Convegni where nome_convegno='" . $nome_convegno . "'");
+foreach ($res as $row) {
+  var_dump($row);
 
-function execute_query($conn, $query)
-{
-  $result = $conn->query($query);
-  if ($result) {
-    echo "query eseguita\n";
-    return $result;
-  } else {
-    echo "errore nell'esecuzione della query: " . $conn->error . "\n";
-    return false;
-  }
 }

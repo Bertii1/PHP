@@ -1,5 +1,10 @@
+<?php
+require_once __DIR__ . "/../includes/auth.php";
+require_admin();
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,26 +97,19 @@
     }
   </style>
 </head>
+
 <body>
   <div class="menu-container">
     <h1>Menu</h1>
     <div class="menu-items">
       <a href="../user/visualizer.php" class="menu-link">Visualizzatore</a>
-      <a href="prenota.html" class="menu-link">Nuovo Convegno</a>
+      <a href="prenota.php" class="menu-link">Nuovo Convegno</a>
       <a href="../auth/registrazione.php" class="menu-link">Registrazione</a>
     </div>
     <div class="menu-footer">
-      <a href="../auth/index.php">Torna al login</a>
+      <a href="../auth/logout.php">Logout</a>
     </div>
   </div>
 </body>
+
 </html>
-<?php 
-  session_start();
-  if($_SESSION["tipo_utente"] !== "admin"){
-    http_response_code(400);
-    print("<h1 style='color: red;'>Non puoi Accedere a Questa Pagina</h1>");
-    sleep(2);
-    header("Location:../auth/index.php");
-  }
-?>

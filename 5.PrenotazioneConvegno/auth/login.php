@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . "/../includes/auth.php";
+require_once __DIR__ . "/../includes/db.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -142,77 +146,6 @@
 
 <?php
 
-function execute_query($conn, $query)
-{
-  $result = $conn->query($query);
-  if ($result) {
-    echo "query eseguita\n";
-    return $result;
-  } else {
-    echo "errore nell'esecuzione della query: " . $conn->error . "\n";
-    return false;
-  }
-}
-function ControllaCredenziali($username, $password)
-{
-  $db_password = "ciaodario";
-  $db_username = "GestioneConvegni_app";
-  $db_name = "GestioneConvegni";
-  $hostname = "localhost";
-
-  $conn = new mysqli($hostname, $db_username, $db_password, $db_name);
-
-  if ($conn->connect_error) {
-    die("errore di connessione: " . $conn->connect_error . "\n");
-  } else {
-    echo "connected to DB\n";
-  }
-
-  $query = "SELECT username, tipo FROM Utenti WHERE username = '" . $username . "' AND password = '" . $password . "'";
-
-  $res = execute_query($conn, $query);
-
-  if ($res != false) {
-    foreach ($res as $row) {
-      return $row;
-    }
-  } else {
-    return false;
-  }
-
-}
-
-
-session_start();
-if ($_COOKIE["loggedIn"] === true) {
-  redirectUserByTipo($_COOKIE["tipo"]);
-}
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  if (isset($_POST["utente"]) && isset($_POST["password"])) {
-
-    $utente = $_POST["utente"];
-    $password = $_POST["password"];
-
-    $row = ControllaCredenziali($utente, $password);
-
-    if ($row !== false) {
-      $_SESSION["tipo_utente"] = $row["tipo"];
-      $_SESSION["utente"] = $row["username"];
-      $login_success = true;
-      redirectUserByTipo($row["tipo"]);
-    }
-
-
-    if (!$login_success) {
-      echo "<script>alert('Credenziali non valide')</script>";
-    }
-
-  } else {
-    echo "<script>alert('Parametri errati')</script>";
-  }
-}
-
 function redirectUserByTipo($tipo_Utente)
 {
   switch ($tipo_Utente) {
@@ -228,7 +161,47 @@ function redirectUserByTipo($tipo_Utente)
   }
 }
 
+function ControllaCredenziali($username, $password)
+{
+  global $conn;
 
+  $query = "SELECT username, tipo FROM Utenti WHERE username = '" . $username . "' AND password = '" . $password . "'";
 
+  $res = execute_query($conn, $query);
 
+  if ($res != false) {
+    foreach ($res as $row) {
+      return $row;
+    }
+  } else {
+    return false;
+  }
+}
+
+if (isset($_SESSION["tipo_utente"]) && $_SESSION["tipo_utente"] !== "") {
+  redirectUserByTipo($_SESSION["tipo_utente"]);
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  if (isset($_POST["utente"]) && isset($_POST["password"])) {
+    $utente = $_POST["utente"];
+    $password = $_POST["password"];
+
+    $row = ControllaCredenziali($utente, $password);
+
+    if ($row !== false) {
+      $_SESSION["tipo_utente"] = $row["tipo"];
+      $_SESSION["utente"] = $row["username"];
+      $login_success = true;
+      redirectUserByTipo($row["tipo"]);
+    }
+
+    if (!$login_success) {
+      echo "<script>alert('Credenziali non valide')</script>";
+    }
+
+  } else {
+    echo "<script>alert('Parametri errati')</script>";
+  }
+}
 ?>

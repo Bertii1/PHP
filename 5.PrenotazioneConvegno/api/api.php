@@ -3,14 +3,14 @@ header('Content-Type: text/html; charset=utf-8');
 
 if (isset($_GET["file_convegno"]) && !empty($_GET["file_convegno"])) {
   $filename = $_GET["file_convegno"];
-  
+
   // Protezione: verifica che il file esista e sia nel percorso corretto
   $filepath = "../data/convegni/" . basename($filename);
-  
+
   if (file_exists($filepath)) {
     $json = file_get_contents($filepath);
     $json = json_decode($json, true);
-    
+
     if ($json && isset($json["partecipanti"])) {
       $res = "";
       for ($i = 0; $i < count($json["partecipanti"]); $i++) {

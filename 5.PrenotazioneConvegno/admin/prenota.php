@@ -1,3 +1,45 @@
+<?php
+require_once __DIR__ . "/../includes/db.php";
+require_once __DIR__ . "/../includes/auth.php";
+
+require_admin();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  global $conn;
+
+  $json = file_get_contents('php://input');
+  $json = json_decode($json, true);
+
+  $nome_convegno = $conn->real_escape_string($json["nome_convegno"]);
+  $numero_partecipanti = intval($json["numero_partecipanti"]);
+
+  $query = "INSERT INTO Convegni (`nome_convegno`,`numero_partecipanti`) VALUES (
+        '$nome_convegno', $numero_partecipanti)";
+
+  execute_query($conn, $query);
+
+  $res = execute_query($conn, "SELECT id FROM Convegni WHERE nome_convegno='$nome_convegno'");
+  $id_convegno = null;
+  if ($res) {
+    foreach ($res as $row) {
+      $id_convegno = intval($row["id"]);
+    }
+  }
+
+  if ($id_convegno) {
+    $partecipanti = $json["partecipanti"];
+    foreach ($partecipanti as $partecipante) {
+      $nome = $conn->real_escape_string($partecipante["nome"]);
+      $cognome = $conn->real_escape_string($partecipante["cognome"]);
+      $query = "INSERT INTO Partecipanti (`id_convegno`,`nome`,`cognome`) VALUES ($id_convegno, '$nome', '$cognome')";
+      execute_query($conn, $query);
+    }
+  }
+
+  echo json_encode(["success" => true]);
+  exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="it">
 
@@ -242,10 +284,10 @@
       console.log(convegno_data)
       SendData()
 
-
       function SendData() {
-        fetch("../api/salva.php", {
+        fetch("prenota.php", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(convegno_data)
         })
       }
