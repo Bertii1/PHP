@@ -136,7 +136,6 @@
           echo '<option value="' . htmlspecialchars($row["id"]) . '">' . htmlspecialchars($row["nome_convegno"]) . '</option>';
         }
       }
-
       ?>
     </select>
     <table id="table_partecipanti">
