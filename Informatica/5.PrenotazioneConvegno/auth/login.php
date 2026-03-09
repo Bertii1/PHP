@@ -165,9 +165,10 @@ function ControllaCredenziali($username, $password)
 {
   global $conn;
 
-  $query = "SELECT username, tipo FROM Utenti WHERE username = '" . $username . "' AND password = '" . $password . "'";
-
-  $res = execute_query($conn, $query);
+  $stmt = $conn->prepare("SELECT username, tipo FROM Utenti WHERE username = ? AND password = ?");
+  $stmt->bind_param("ss", $username, $password);
+  $stmt->execute();
+  $res = $stmt->get_result();
 
   if ($res != false) {
     foreach ($res as $row) {
